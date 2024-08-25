@@ -1,19 +1,21 @@
 import { rowData } from './data.js'
 
 const body = document.querySelector('body')
-
+const navbar = displayNavbar(body)
+const buttonContainer = addButtonContainer()
+const { tableContainer, inputs, paginationContainer } = createContainers()
+const logo = displayLogo()
 const keys = Object.keys(rowData)
 const values = Object.values(rowData)
+dispalyMainButtons()
 
 function createContainers() {
   const tableContainer = document.createElement('table')
   const inputs = document.createElement('div')
   const paginationContainer = document.createElement('div')
-
   return { tableContainer, inputs, paginationContainer }
 }
-const { tableContainer, inputs, paginationContainer } = createContainers()
-
+//DISPALY NAVBAR
 function displayNavbar(parent) {
   const navbar = document.createElement('div')
   navbar.classList.add('navbar')
@@ -27,37 +29,34 @@ function displayNavbar(parent) {
     </div>
 `
   parent.appendChild(navbar)
+  return navbar
 }
-displayNavbar(body)
 //ADD MAIN BUTTON CONTAINER
 function addButtonContainer() {
   const buttonContainer = document.createElement('div')
   buttonContainer.classList.add('button-container', 'wrapper')
   body.appendChild(buttonContainer)
+  return buttonContainer
 }
-addButtonContainer()
-
 //DISPLAY LOGO
 function displayLogo() {
   const logo = document.createElement('div')
   logo.classList.add('logo')
   body.appendChild(logo)
+  return logo
 }
-displayLogo()
-
 //REMOVE LOGO
 function removeLogo(logo) {
   logo.remove()
   inputs ? (logo.display = 'none') : null
 }
 //DISPLAY MAIN BUTTONS
+function dispalyMainButtons(){
 keys.forEach((item, index) => {
-  const buttonContainer = document.querySelector('.button-container')
   generateMainButton(item, index, buttonContainer)
 })
-
+}
 function generateMainButton(obj, index, parent, event) {
-  const logo = document.querySelector('.logo')
   const button = document.createElement('button')
   button.id = `${index}`
   button.textContent = obj
@@ -201,7 +200,6 @@ function selectNumbersOfRows(select) {
   })
   handlePagination(rows, select.value, select)
 }
-
 //SHOW MODAL
 function showModal(event) {
   const modal = document.createElement('div')
@@ -279,7 +277,6 @@ function handleRemoveAllButton() {
     })
   })
 }
-
 //ADD TABLE CONTAINER TO DOM
 function addTableContainer(parent, index, value1, value2, value3) {
   tableContainer.innerHTML = `
@@ -356,13 +353,13 @@ function searchByText(select) {
   const rows = Array.from(document.querySelectorAll('.row'))
   const visibleRows = rows.filter(row => row.style.display === 'table-row')
   let placeholderText
+
   if (searchByTextInput.value.length === 0) {
     placeholderText = rows.length
   } else {
     placeholderText = visibleRows.length
   }
   searchByIndexInput.placeholder = `1 of ${placeholderText}`
-
   rows.forEach(row => {
     const nameOrTitle = row
       .querySelector('td:nth-child(2)')
@@ -413,19 +410,18 @@ function addPagination(parent) {
   paginationContainer.classList.add('pagination-container')
   parent.appendChild(paginationContainer)
 }
-
 // HANDLE PAGINATION
 function handlePagination(rows, selectedValue = 10, select) {
   const prev = document.querySelector('.arrow-left')
   const next = document.querySelector('.arrow-right')
   const currentPage = document.querySelector('.current-page')
   const pagesInput = document.querySelector('#pageInput')
-  let numebrsOfPages = Math.ceil(rows.length / selectedValue)
+  let numberOfPage = Math.ceil(rows.length / selectedValue)
   let number = 1
 
   pagesInput.setAttribute('min', '1')
-  pagesInput.setAttribute('max', numebrsOfPages)
-  currentPage.textContent = ` of ${numebrsOfPages}`
+  pagesInput.setAttribute('max', numberOfPage)
+  currentPage.textContent = ` of ${numberOfPage}`
 
   function showCurrentPages(number = 1) {
     const rowsPerPage = Number(select.value)
@@ -442,7 +438,7 @@ function handlePagination(rows, selectedValue = 10, select) {
   }
 
   function updatePrevButton() {
-    if (number <= 1 || numebrsOfPages === 1) {
+    if (number <= 1 || numberOfPage === 1) {
       prev.disabled = true
     } else {
       prev.disabled = false
@@ -450,7 +446,7 @@ function handlePagination(rows, selectedValue = 10, select) {
   }
 
   function updateNextButton() {
-    if (number >= numebrsOfPages || numebrsOfPages === 1) {
+    if (number >= numberOfPage || numberOfPage === 1) {
       next.disabled = true
     } else {
       next.disabled = false
@@ -477,7 +473,7 @@ function handlePagination(rows, selectedValue = 10, select) {
 
   pagesInput.addEventListener('input', function () {
     number = Number(pagesInput.value) || 1
-    if (number > numebrsOfPages) number = numebrsOfPages
+    if (number > numberOfPage) number = numberOfPage
     if (number < 1) number = 1
     updatePrevButton()
     updateNextButton()
@@ -486,7 +482,7 @@ function handlePagination(rows, selectedValue = 10, select) {
   updatePrevButton()
   updateNextButton()
   showCurrentPages()
-  updatePaginationInputAfterDeletion(pagesInput, numebrsOfPages)
+  updatePaginationInputAfterDeletion(pagesInput, numberOfPage)
 }
 // UPDATE PAGINATION AFTER DELETION
 function updatePaginationAfterDeletion() {
@@ -495,16 +491,14 @@ function updatePaginationAfterDeletion() {
   handlePagination(rows, select.value, select)
 }
 //UPDATE PAGINATION INPUT VALUE AFTER DELETION
-function updatePaginationInputAfterDeletion(pagesInput, numebrsOfPages) {
-  if (parseInt(pagesInput.value) > numebrsOfPages)
-    pagesInput.value = numebrsOfPages
+function updatePaginationInputAfterDeletion(pagesInput, numberOfPage) {
+  if (parseInt(pagesInput.value) > numberOfPage) pagesInput.value = numberOfPage
 }
 //UPDATE PAGINATION INPUT VALUE AFTER SEARCHING
 function updatePaginationAfterSearching() {
   const pagesInput = document.querySelector('#pageInput')
   pagesInput.value = 1
 }
-
 // REMOVE ALL CHECKED ROWS
 function removeCheckedRows() {
   const checkboxes = document.querySelectorAll('input[type=checkbox]')
@@ -517,7 +511,6 @@ function removeCheckedRows() {
   })
   updatePaginationAfterDeletion()
 }
-
 //DELETE SILGLE ROW
 function deleteSingleRow() {
   const rows = document.querySelectorAll('.row')
