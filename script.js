@@ -15,7 +15,7 @@ function createContainers() {
   const paginationContainer = document.createElement('div')
   return { tableContainer, inputs, paginationContainer }
 }
-//DISPALY NAVBAR
+
 function displayNavbar(parent) {
   const navbar = document.createElement('div')
   navbar.classList.add('navbar')
@@ -31,30 +31,30 @@ function displayNavbar(parent) {
   parent.appendChild(navbar)
   return navbar
 }
-//ADD MAIN BUTTON CONTAINER
+
 function addButtonContainer() {
   const buttonContainer = document.createElement('div')
   buttonContainer.classList.add('button-container', 'wrapper')
   body.appendChild(buttonContainer)
   return buttonContainer
 }
-//DISPLAY LOGO
+
 function displayLogo() {
   const logo = document.createElement('div')
   logo.classList.add('logo')
   body.appendChild(logo)
   return logo
 }
-//REMOVE LOGO
+
 function removeLogo(logo) {
   logo.remove()
   inputs ? (logo.display = 'none') : null
 }
-//DISPLAY MAIN BUTTONS
-function dispalyMainButtons(){
-keys.forEach((item, index) => {
-  generateMainButton(item, index, buttonContainer)
-})
+
+function dispalyMainButtons() {
+  keys.forEach((item, index) => {
+    generateMainButton(item, index, buttonContainer)
+  })
 }
 function generateMainButton(obj, index, parent, event) {
   const button = document.createElement('button')
@@ -69,13 +69,13 @@ function generateMainButton(obj, index, parent, event) {
   button.addEventListener('click', function (event) {
     //REMOVE LOGO
     removeLogo(logo)
-    addInputsForSearching(event, body, values[index].length)
+    updateInputsForSearching(event, body, values[index].length)
     assingTableTitles(event, index)
     addPagination(body)
     updateTableFields(event)
   })
 }
-// UPDATE TBODY FIELDS
+
 function updateTableFields(event) {
   const table = document.querySelector('table')
   const tbody = document.createElement('tbody')
@@ -179,7 +179,7 @@ function updateTableFields(event) {
     })
   )
 }
-//SELECT ACCOUNT OF ROWS
+
 function selectNumbersOfRows(select) {
   const rows = Array.from(document.querySelectorAll('.row'))
   const option20 = document.querySelector('select option:last-child')
@@ -200,7 +200,7 @@ function selectNumbersOfRows(select) {
   })
   handlePagination(rows, select.value, select)
 }
-//SHOW MODAL
+
 function showModal(event) {
   const modal = document.createElement('div')
   modal.innerHTML = `<button class="close-modal-btn">&times;</button>
@@ -219,7 +219,7 @@ function showModal(event) {
   updateModalContent(tableContainer, tbody)
   closeModal()
 }
-//UPDATE MODAL TBODY
+
 function updateModalContent(tableContainer, tbody) {
   const mainTableName = tableContainer.querySelector('tbody')
   const addBtns = document.querySelectorAll('#add')
@@ -237,7 +237,7 @@ function updateModalContent(tableContainer, tbody) {
     }
   })
 }
-//CLOSE MODAL
+
 function closeModal() {
   const modals = document.querySelectorAll('.modal')
   const closeBtns = document.querySelectorAll('.close-modal-btn')
@@ -249,7 +249,7 @@ function closeModal() {
     })
   )
 }
-//CREATE REMOVE REMOVE ALL BUTTON
+
 function showRemoveAllButton(parent) {
   const button = document.createElement('button')
   button.classList.add('remove-all')
@@ -260,7 +260,7 @@ function showRemoveAllButton(parent) {
     removeCheckedRows()
   })
 }
-//SHOW/HIDE REMOVE ALL BTN
+
 function handleRemoveAllButton() {
   const checkboxes = document.querySelectorAll('input[type=checkbox]')
   checkboxes.forEach(checkbox => {
@@ -277,8 +277,8 @@ function handleRemoveAllButton() {
     })
   })
 }
-//ADD TABLE CONTAINER TO DOM
-function addTableContainer(parent, index, value1, value2, value3) {
+
+function updateTableContainer(parent, index, value1, value2, value3) {
   tableContainer.innerHTML = `
         <table class="wrapper">
           <thead>
@@ -294,7 +294,7 @@ function addTableContainer(parent, index, value1, value2, value3) {
   parent.appendChild(tableContainer)
   updateNumbersOfRow()
 }
-//ASSIGN TABLE TITLES
+
 function assingTableTitles(event, index) {
   let title1 = 'name'
   let title2 = 'model'
@@ -315,20 +315,18 @@ function assingTableTitles(event, index) {
     title3 = 'director'
   }
   //ADD TABLE TO DOM
-  addTableContainer(body, index, title1, title2, title3)
+  updateTableContainer(body, index, title1, title2, title3)
 }
-// UPDATE ROW NUMBERS
+
 function updateNumbersOfRow() {
   const rows = document.querySelectorAll('.row')
   const searchByIndexInput = document.getElementById('searchByIndex')
   searchByIndexInput.placeholder = `1 of ${rows.length}`
   searchByIndexInput.setAttribute('min', '1')
   searchByIndexInput.setAttribute('max', rows.length)
-  let rowsLength = rows.length
-  return rowsLength
 }
-//ADD INPUTS TO DOM
-function addInputsForSearching(event, parent, amountOfRows) {
+
+function updateInputsForSearching(event, parent, amountOfRows) {
   let kindOfText = 'name'
   if (event.target.textContent.toLowerCase() === 'films') {
     kindOfText = 'title'
@@ -346,7 +344,7 @@ function addInputsForSearching(event, parent, amountOfRows) {
   inputs.classList.add('search-container')
   parent.appendChild(inputs)
 }
-// SEARCH BY TEXT
+
 function searchByText(select) {
   const searchByTextInput = document.querySelector('#searchByText')
   const searchByIndexInput = document.getElementById('searchByIndex')
@@ -376,7 +374,7 @@ function searchByText(select) {
   })
   updatePaginationAfterSearching()
 }
-//SEARCH BY INDEX
+
 function searchByIndex(select) {
   const searchByIndexInput = document.getElementById('searchByIndex')
   const rows = Array.from(document.querySelectorAll('.row'))
@@ -396,7 +394,7 @@ function searchByIndex(select) {
   }
   updatePaginationAfterSearching()
 }
-// ADD PAGINATION
+
 function addPagination(parent) {
   paginationContainer.innerHTML = `
         <button class="arrow-btn arrow-left"></button>
@@ -410,7 +408,7 @@ function addPagination(parent) {
   paginationContainer.classList.add('pagination-container')
   parent.appendChild(paginationContainer)
 }
-// HANDLE PAGINATION
+
 function handlePagination(rows, selectedValue = 10, select) {
   const prev = document.querySelector('.arrow-left')
   const next = document.querySelector('.arrow-right')
@@ -484,22 +482,22 @@ function handlePagination(rows, selectedValue = 10, select) {
   showCurrentPages()
   updatePaginationInputAfterDeletion(pagesInput, numberOfPage)
 }
-// UPDATE PAGINATION AFTER DELETION
+
 function updatePaginationAfterDeletion() {
   const select = document.querySelector('select')
   const rows = Array.from(document.querySelectorAll('.row'))
   handlePagination(rows, select.value, select)
 }
-//UPDATE PAGINATION INPUT VALUE AFTER DELETION
+
 function updatePaginationInputAfterDeletion(pagesInput, numberOfPage) {
   if (parseInt(pagesInput.value) > numberOfPage) pagesInput.value = numberOfPage
 }
-//UPDATE PAGINATION INPUT VALUE AFTER SEARCHING
+
 function updatePaginationAfterSearching() {
   const pagesInput = document.querySelector('#pageInput')
   pagesInput.value = 1
 }
-// REMOVE ALL CHECKED ROWS
+
 function removeCheckedRows() {
   const checkboxes = document.querySelectorAll('input[type=checkbox]')
   const rows = document.querySelectorAll('.row')
@@ -511,7 +509,7 @@ function removeCheckedRows() {
   })
   updatePaginationAfterDeletion()
 }
-//DELETE SILGLE ROW
+
 function deleteSingleRow() {
   const rows = document.querySelectorAll('.row')
   const deleteBtns = document.querySelectorAll('#delete')
@@ -527,7 +525,7 @@ function deleteSingleRow() {
     })
   })
 }
-// ADD ACTIVE CLASS FOR BUTTONS
+
 function showActiveButton() {
   const mainButtons = document.querySelectorAll('.main-button')
   mainButtons.forEach(button => {
@@ -537,7 +535,7 @@ function showActiveButton() {
     })
   })
 }
-// HANDLE COLORFULL AND DARK MODE
+
 function setColorTheme() {
   const darkModeBtn = document.querySelector('.dark-mode')
   const colorfullModeBtn = document.querySelector('.colorfull-mode')
@@ -561,7 +559,7 @@ function setColorTheme() {
   darkModeBtn.addEventListener('click', setDarkTheme)
   colorfullModeBtn.addEventListener('click', setColorfullTheme)
 }
-// VADER AND YODA VOICE
+
 function turnOnvoice(event) {
   let lettersKeys = []
   function defineVoice(event) {
