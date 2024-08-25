@@ -349,7 +349,6 @@ td .actions button:hover {
   opacity: 0.1;
   cursor: not-allowed;
 }
-
 .pagination-container span {
   color: var(--white);
 }
@@ -357,7 +356,6 @@ td .actions button:hover {
   padding: 0.25rem 0;
   font-size: inherit;
 }
-
 /*Media queries*/
 @media (min-width: 600px) {
   .button-container {
@@ -391,7 +389,6 @@ td .actions button:hover {
     font-size: 2rem;
   }
 }
-
 @media (min-width: 768px) {
   .wrapper {
     padding: 0 2rem;

@@ -200,22 +200,9 @@ function selectNumbersOfRows(select) {
     }
   })
   handlePagination(rows, select.value, select)
+  
 }
-//DELETE SILGLE ROW
-function deleteSingleRow() {
-  const rows = document.querySelectorAll('.row')
-  const deleteBtns = document.querySelectorAll('#delete')
-  deleteBtns.forEach((btn, index) => {
-    btn.addEventListener('click', function () {
-      rows.forEach(row => {
-        if (index.toString() === row.id) {
-          row.remove()
-          updateNumbersOfRow()
-        }
-      })
-    })
-  })
-}
+
 //SHOW MODAL
 function showModal(event) {
   const modal = document.createElement('div')
@@ -254,7 +241,7 @@ function updateModalContent(tableContainer, tbody) {
   })
 }
 //CLOSE MODAL
-function closeModal(modalblur) {
+function closeModal() {
   const modals = document.querySelectorAll('.modal')
   const closeBtns = document.querySelectorAll('.close-modal-btn')
   closeBtns.forEach(button =>
@@ -293,17 +280,7 @@ function handleRemoveAllButton() {
     })
   })
 }
-// REMOVE ALL CHECKED ROWS
-function removeCheckedRows() {
-  const checkboxes = document.querySelectorAll('input[type=checkbox]')
-  const rows = document.querySelectorAll('.row')
-  checkboxes.forEach((checkbox, index) => {
-    if (checkbox.checked) {
-      rows[index].remove()
-      updateNumbersOfRow()
-    }
-  })
-}
+
 //ADD TABLE CONTAINER TO DOM
 function addTableContainer(parent, index, value1, value2, value3) {
   tableContainer.innerHTML = `
@@ -351,6 +328,8 @@ function updateNumbersOfRow() {
   searchByIndexInput.placeholder = `1 of ${rows.length}`
   searchByIndexInput.setAttribute('min', '1')
   searchByIndexInput.setAttribute('max', rows.length)
+  let rowsLength = rows.length
+  return rowsLength
 }
 //ADD INPUTS TO DOM
 function addInputsForSearching(event, parent, amountOfRows) {
@@ -433,6 +412,7 @@ function addPagination(parent) {
   paginationContainer.classList.add('pagination-container')
   parent.appendChild(paginationContainer)
 }
+
 // HANDLE PAGINATION
 function handlePagination(rows, selectedValue = 10, select) {
   const prev = document.querySelector('.arrow-left')
@@ -450,7 +430,6 @@ function handlePagination(rows, selectedValue = 10, select) {
     const rowsPerPage = Number(select.value)
     const startId = (number - 1) * rowsPerPage
     const endId = number * rowsPerPage
-
     rows.forEach(row => {
       const rowId = Number(row.id)
       if (rowId >= startId && rowId < endId) {
@@ -506,7 +485,52 @@ function handlePagination(rows, selectedValue = 10, select) {
   updatePrevButton()
   updateNextButton()
   showCurrentPages()
+  updateInputValueAfterDeletion(pagesInput, numebrsOfPages)
 }
+// UPDATE PAGINATION AFTER DELETION
+function updatePaginationAfterDeletion() {
+  const select = document.querySelector('select')
+  const rows = Array.from(document.querySelectorAll('.row'))
+  handlePagination(rows, select.value, select)
+}
+//UPDATE INPUT VALUE AFTER DELETION
+function updateInputValueAfterDeletion(pagesInput, numebrsOfPages) {
+  if (parseInt(pagesInput.value) > numebrsOfPages) {
+    pagesInput.value = numebrsOfPages
+    console.log('Zgadza się')
+  }
+}
+
+// REMOVE ALL CHECKED ROWS
+function removeCheckedRows() {
+  const checkboxes = document.querySelectorAll('input[type=checkbox]')
+  const rows = document.querySelectorAll('.row')
+  checkboxes.forEach((checkbox, index) => {
+    if (checkbox.checked) {
+      rows[index].remove()
+      updateNumbersOfRow()
+    }
+  })
+  updatePaginationAfterDeletion()
+}
+
+//DELETE SILGLE ROW
+function deleteSingleRow() {
+  const rows = document.querySelectorAll('.row')
+  const deleteBtns = document.querySelectorAll('#delete')
+  deleteBtns.forEach((btn, index) => {
+    btn.addEventListener('click', function () {
+      rows.forEach(row => {
+        if (index.toString() === row.id) {
+          row.remove()
+          updateNumbersOfRow()
+          updatePaginationAfterDeletion()
+        }
+      })
+    })
+  })
+}
+
 // ADD ACTIVE CLASS FOR BUTTONS
 function showActiveButton() {
   const mainButtons = document.querySelectorAll('.main-button')
