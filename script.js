@@ -200,7 +200,6 @@ function selectNumbersOfRows(select) {
     }
   })
   handlePagination(rows, select.value, select)
-  
 }
 
 //SHOW MODAL
@@ -378,6 +377,7 @@ function searchByText(select) {
       selectNumbersOfRows(select)
     }
   })
+  updatePaginationAfterSearching()
 }
 //SEARCH BY INDEX
 function searchByIndex(select) {
@@ -397,6 +397,7 @@ function searchByIndex(select) {
   if (searchByIndexInput.value === '') {
     selectNumbersOfRows(select)
   }
+  updatePaginationAfterSearching()
 }
 // ADD PAGINATION
 function addPagination(parent) {
@@ -485,7 +486,7 @@ function handlePagination(rows, selectedValue = 10, select) {
   updatePrevButton()
   updateNextButton()
   showCurrentPages()
-  updateInputValueAfterDeletion(pagesInput, numebrsOfPages)
+  updatePaginationInputAfterDeletion(pagesInput, numebrsOfPages)
 }
 // UPDATE PAGINATION AFTER DELETION
 function updatePaginationAfterDeletion() {
@@ -493,12 +494,15 @@ function updatePaginationAfterDeletion() {
   const rows = Array.from(document.querySelectorAll('.row'))
   handlePagination(rows, select.value, select)
 }
-//UPDATE INPUT VALUE AFTER DELETION
-function updateInputValueAfterDeletion(pagesInput, numebrsOfPages) {
-  if (parseInt(pagesInput.value) > numebrsOfPages) {
+//UPDATE PAGINATION INPUT VALUE AFTER DELETION
+function updatePaginationInputAfterDeletion(pagesInput, numebrsOfPages) {
+  if (parseInt(pagesInput.value) > numebrsOfPages)
     pagesInput.value = numebrsOfPages
-    console.log('Zgadza się')
-  }
+}
+//UPDATE PAGINATION INPUT VALUE AFTER SEARCHING
+function updatePaginationAfterSearching() {
+  const pagesInput = document.querySelector('#pageInput')
+  pagesInput.value = 1
 }
 
 // REMOVE ALL CHECKED ROWS
@@ -530,7 +534,6 @@ function deleteSingleRow() {
     })
   })
 }
-
 // ADD ACTIVE CLASS FOR BUTTONS
 function showActiveButton() {
   const mainButtons = document.querySelectorAll('.main-button')
