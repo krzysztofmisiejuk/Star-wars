@@ -105,22 +105,22 @@ function updateTableFields(event) {
           },
           index
         ) => {
-          //SPECIES
+        
           if (!model && !manufacturer) {
             model = classification
             manufacturer = designation
           }
-          //PLANETS
+         
           if (!classification && !model) {
             model = rotation_period
             manufacturer = climate
           }
-          //PEOPLE
+     
           if (!model && !climate) {
             model = hair_color
             manufacturer = skin_color
           }
-          //FILMS
+      
           if (!model && !skin_color) {
             name = title
             model = episode_id
@@ -314,7 +314,6 @@ function assingTableTitles(event, index) {
     title2 = 'episode id'
     title3 = 'director'
   }
-  //ADD TABLE TO DOM
   updateTableContainer(body, index, title1, title2, title3)
 }
 
