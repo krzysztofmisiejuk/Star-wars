@@ -541,10 +541,10 @@ function setColorTheme() {
   colorfullModeBtn.addEventListener('click', setColorfullTheme)
 }
 function setDarkTheme() {
-  body.classList.add("dark-theme")
+  body.classList.add('dark-theme')
 }
 function setColorfullTheme() {
-  body.classList.remove("dark-theme")
+  body.classList.remove('dark-theme')
 }
 
 function turnOnvoice() {
