@@ -1,13 +1,16 @@
 import { rowData } from './data.js'
 
 const body = document.querySelector('body')
-const navbar = displayNavbar(body)
-const buttonContainer = addButtonContainer()
-const { tableContainer, inputs, paginationContainer } = createContainers()
-const logo = displayLogo()
 const keys = Object.keys(rowData)
 const values = Object.values(rowData)
-dispalyMainButtons()
+const { tableContainer, inputs, paginationContainer } = createContainers()
+displayNavbar()
+const buttonContainer = addButtonContainer()
+displayMainButtons()
+const logo = displayLogo()
+showActiveButton()
+setColorTheme()
+turnOnvoice()
 
 function createContainers() {
   const tableContainer = document.createElement('table')
@@ -16,7 +19,7 @@ function createContainers() {
   return { tableContainer, inputs, paginationContainer }
 }
 
-function displayNavbar(parent) {
+function displayNavbar() {
   const navbar = document.createElement('div')
   navbar.classList.add('navbar')
   navbar.innerHTML = `
@@ -28,7 +31,7 @@ function displayNavbar(parent) {
         </div>
     </div>
 `
-  parent.appendChild(navbar)
+  body.appendChild(navbar)
   return navbar
 }
 
@@ -46,28 +49,23 @@ function displayLogo() {
   return logo
 }
 
-function removeLogo(logo) {
+function removeLogo() {
   logo.remove()
-  inputs ? (logo.display = 'none') : null
 }
 
-function dispalyMainButtons() {
+function displayMainButtons() {
   keys.forEach((item, index) => {
     generateMainButton(item, index, buttonContainer)
   })
 }
-function generateMainButton(obj, index, parent, event) {
+function generateMainButton(obj, index, parent) {
   const button = document.createElement('button')
   button.id = `${index}`
   button.textContent = obj
   button.classList.add('main-button')
   parent.appendChild(button)
-  showActiveButton()
-  turnOnvoice(event)
-  setColorTheme()
 
   button.addEventListener('click', function (event) {
-    //REMOVE LOGO
     removeLogo(logo)
     updateInputsForSearching(event, body, values[index].length)
     assingTableTitles(event, index)
@@ -539,51 +537,43 @@ function showActiveButton() {
 function setColorTheme() {
   const darkModeBtn = document.querySelector('.dark-mode')
   const colorfullModeBtn = document.querySelector('.colorfull-mode')
-
-  function setDarkTheme() {
-    document.documentElement.style.setProperty('--hover-active', '#383838')
-    document.documentElement.style.setProperty('--hover-color', '#979797')
-    document.documentElement.style.setProperty('--table-border', '#000')
-    document.documentElement.style.setProperty('--nav-color', '#000')
-  }
-  function setColorfullTheme() {
-    document.documentElement.style.setProperty('--hover-active', ' #e3e54a')
-    document.documentElement.style.setProperty('--hover-color', '#e2e54a9c')
-    document.documentElement.style.setProperty(
-      '--table-border',
-      'rgba(95, 103, 16, 0.5)'
-    )
-    document.documentElement.style.setProperty('--nav-color', '#3a3a15')
-  }
-
   darkModeBtn.addEventListener('click', setDarkTheme)
   colorfullModeBtn.addEventListener('click', setColorfullTheme)
 }
+function setDarkTheme() {
+  body.classList.add("dark-theme")
+}
+function setColorfullTheme() {
+  body.classList.remove("dark-theme")
+}
 
-function turnOnvoice(event) {
+function turnOnvoice() {
   let lettersKeys = []
-  function defineVoice(event) {
-    lettersKeys.push(event.key)
-    let word = lettersKeys.join('').toLowerCase()
-    if (word.includes('vader')) {
-      addAudio('vader')
-      removeAudios()
-    } else if (word.includes('yoda')) {
-      addAudio('yoda')
-      removeAudios()
-    }
+  document.addEventListener('keyup', function (event) {
+    defineVoice(event, lettersKeys)
+  })
+}
+
+function defineVoice(event, arr) {
+  arr.push(event.key)
+  let word = arr.join('').toLowerCase()
+  if (word.includes('vader')) {
+    addAudio('vader', arr)
+  } else if (word.includes('yoda')) {
+    addAudio('yoda', arr)
   }
-  function addAudio(word) {
+}
+
+function addAudio(word, arr) {
+  const isExistAudio = document.querySelector('audio')
+  if (!isExistAudio) {
     const voice = document.createElement('audio')
-    body.append(voice)
+    document.body.append(voice)
     voice.setAttribute('src', `./audio/${word}.mp3`)
     voice.play()
-    lettersKeys = []
+    voice.addEventListener('ended', () => voice.remove())
+    arr.length = 0
+  } else {
+    arr.length = 0
   }
-  function removeAudios() {
-    setTimeout(function () {
-      document.querySelectorAll('audio').forEach(audio => audio.remove())
-    }, 5000)
-  }
-  document.addEventListener('keyup', defineVoice)
 }
