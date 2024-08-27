@@ -103,22 +103,21 @@ function updateTableFields(event) {
           },
           index
         ) => {
-        
           if (!model && !manufacturer) {
             model = classification
             manufacturer = designation
           }
-         
+
           if (!classification && !model) {
             model = rotation_period
             manufacturer = climate
           }
-     
+
           if (!model && !climate) {
             model = hair_color
             manufacturer = skin_color
           }
-      
+
           if (!model && !skin_color) {
             name = title
             model = episode_id
@@ -150,8 +149,10 @@ function updateTableFields(event) {
           newRow.id = index
           newRow.classList.add('row')
           tbody.appendChild(newRow)
+          emptyTableInfo()
         }
       )
+
       selectNumbersOfRows(select)
     }
     deleteSingleRow()
@@ -176,6 +177,17 @@ function updateTableFields(event) {
       showModal(event)
     })
   )
+}
+
+function emptyTableInfo() {
+  const tbody = document.querySelector('tbody')
+  const info = document.createElement('p')
+  info.classList.add('empty-table-info')
+  info.textContent = 'Brak elementów do wyświetlenia'
+  if (tbody.children.length === 0) {
+    document.querySelector('thead').remove()
+    tableContainer.appendChild(info)
+  } 
 }
 
 function selectNumbersOfRows(select) {
@@ -502,6 +514,7 @@ function removeCheckedRows() {
     if (checkbox.checked) {
       rows[index].remove()
       updateNumbersOfRow()
+      emptyTableInfo()
     }
   })
   updatePaginationAfterDeletion()
@@ -517,6 +530,7 @@ function deleteSingleRow() {
           row.remove()
           updateNumbersOfRow()
           updatePaginationAfterDeletion()
+          emptyTableInfo()
         }
       })
     })

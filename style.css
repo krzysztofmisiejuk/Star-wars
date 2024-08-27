@@ -221,6 +221,13 @@ td .actions button:hover {
 .actions input[type='checkbox'] {
   transform: scale(1.1);
 }
+.empty-table-info {
+  margin: 2rem;
+  color: var(--white);
+  font-size: 1.5rem;
+  text-align: center;
+}
+
 .modal {
   margin: 0 1rem 0 0;
   position: fixed;
