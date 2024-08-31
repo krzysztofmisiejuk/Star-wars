@@ -141,23 +141,23 @@ select {
   justify-content: center;
   flex-wrap: wrap;
 }
-.serarch-container-item {
+.search-container-item {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   align-items: center;
   margin: 0.2rem;
   min-width: 390px;
 }
-.search-container .serarch-container-item input,
-.search-container .serarch-container-item label {
+.search-container .search-container-item input,
+.search-container .search-container-item label {
   margin: 0.1rem 0;
   font-size: 1rem;
 }
-.search-container .serarch-container-item label {
+.search-container .search-container-item label {
   color: var(--white);
   text-align: center;
 }
-.search-container .serarch-container-item input {
+.search-container .search-container-item input {
   justify-self: center;
   padding: 0.25rem;
   width: 80vw;
@@ -366,7 +366,7 @@ td .actions button:hover {
   .main-button {
     font-size: 1.2rem;
   }
-  .search-container .serarch-container-item input {
+  .search-container .search-container-item input {
     width: 100%;
   }
   table {
@@ -407,11 +407,11 @@ td .actions button:hover {
   .main-button {
     padding: 1rem 2rem;
   }
-  .serarch-container-item {
+  .search-container-item {
     margin: 0 0.5rem;
   }
-  .search-container .serarch-container-item input,
-  .search-container .serarch-container-item label {
+  .search-container .search-container-item input,
+  .search-container .search-container-item label {
     font-size: 1.2rem;
   }
   td .actions button {
@@ -449,10 +449,10 @@ td .actions button:hover {
   .main-button {
     font-size: 1.4rem;
   }
-  .serarch-container-item {
+  .search-container-item {
     grid-template-columns: repeat(2, 1fr);
   }
-  .search-container .serarch-container-item label {
+  .search-container .search-container-item label {
     text-align: right;
     margin-right: 1rem;
   }

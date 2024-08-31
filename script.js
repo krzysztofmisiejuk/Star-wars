@@ -8,7 +8,7 @@ createNavbar()
 const buttonsContainer = createButtonsContainer()
 displayMainButtons()
 const logo = displayLogo()
-showActiveButton()
+showActiveMainButton()
 setColorTheme()
 turnOnVoice()
 
@@ -69,7 +69,7 @@ function generateMainButton(obj, index) {
   button.addEventListener('click', function (event) {
     removeLogo()
     generateInputsForSearching(event, values[index].length)
-    assingTableTitles(event)
+    assignTableTitles(event)
     createPagination()
     updateTableFields(event)
   })
@@ -81,7 +81,7 @@ function updateTableFields(event) {
   const searchByTextInput = document.querySelector('#searchByText')
   const searchByIndexInput = document.getElementById('searchByIndex')
   const select = document.querySelector('select')
-
+  
   table.append(tbody)
   keys.forEach((key, index) => {
     if (event.target.textContent === keys[index]) {
@@ -150,20 +150,21 @@ function updateTableFields(event) {
           newRow.id = index
           newRow.classList.add('row')
           tbody.appendChild(newRow)
+          
           handleDeleteSingleRow()
           handleRemoveAllButton()
           showEmptyTableInfo()
+
+          searchByTextInput.addEventListener("keyup", function(){
+            searchByText(newRow, tbody, name, searchByTextInput, select)
+            selectNumbersOfRows(select)
+          })
         }
       )
       selectNumbersOfRows(select)
     }
-    updateNumbersOfRows()
+    updateNumbersOfRowsInSearchingInput()
 
-    if (searchByTextInput) {
-      searchByTextInput.addEventListener('keyup', function () {
-        searchByText(select)
-      })
-    }
     searchByIndexInput.addEventListener('keyup', function () {
       searchByIndex(select)
     })
@@ -177,19 +178,6 @@ function updateTableFields(event) {
       showModal()
     })
   )
-}
-
-function showEmptyTableInfo() {
-  const tbody = document.querySelector('tbody')
-  const info = document.createElement('p')
-  info.classList.add('empty-table-info')
-  info.textContent = 'Brak elementów do wyświetlenia'
-  if (tbody.children.length === 0) {
-    inputs.remove()
-    paginationContainer.remove()
-    document.querySelector('thead').remove()
-    tableContainer.appendChild(info)
-  } 
 }
 
 function selectNumbersOfRows(select) {
@@ -284,7 +272,6 @@ function handleRemoveAllButton() {
         const anyChecked = Array.from(checkboxes).some(item => item.checked)
         if (!anyChecked) {
           removeAllButton.remove()
-          
         }
       }
     })
@@ -305,10 +292,10 @@ function updateTableContainer(value1, value2, value3) {
         </table>
    `
   body.appendChild(tableContainer)
-  updateNumbersOfRows()
+  updateNumbersOfRowsInSearchingInput()
 }
 
-function assingTableTitles(event) {
+function assignTableTitles(event) {
   let title1 = 'name'
   let title2 = 'model'
   let title3 = 'manufacturer'
@@ -330,7 +317,7 @@ function assingTableTitles(event) {
   updateTableContainer(title1, title2, title3)
 }
 
-function updateNumbersOfRows() {
+function updateNumbersOfRowsInSearchingInput() {
   const rows = document.querySelectorAll('.row')
   const searchByIndexInput = document.getElementById('searchByIndex')
   searchByIndexInput.placeholder = `1 of ${rows.length}`
@@ -344,11 +331,11 @@ function generateInputsForSearching(event, amountOfRows) {
     kindOfText = 'title'
   }
   inputs.innerHTML = `
-      <div class="serarch-container-item">
+      <div class="search-container-item">
           <label for="searchByText">Search by text</label>
           <input type="text" id="searchByText" placeholder="Search by ${kindOfText}">
           </div>
-      <div class="serarch-container-item">
+      <div class="search-container-item">
            <label for="searchByIndex">Search by Index</label>
            <input type="number" id="searchByIndex" placeholder="1 of ${amountOfRows}">
       </div>
@@ -357,39 +344,32 @@ function generateInputsForSearching(event, amountOfRows) {
   body.appendChild(inputs)
 }
 
-function searchByText(select) {
-  const searchByTextInput = document.querySelector('#searchByText')
-  const searchByIndexInput = document.getElementById('searchByIndex')
-  const rows = Array.from(document.querySelectorAll('.row'))
-  const visibleRows = rows.filter(row => row.style.display === 'table-row')
-  let placeholderText
-
-  if (searchByTextInput.value.length === 0) {
-    placeholderText = rows.length
-  } else {
-    placeholderText = visibleRows.length
+function searchByText(newRow, tbody,  name, searchByTextInput, select){
+  newRow.remove()
+  const textInputValue = searchByTextInput.value.toLowerCase()
+  if(name.toLowerCase().includes(textInputValue)){
+    tbody.appendChild(newRow)
+    selectNumbersOfRows(select)
+  } else if(searchByTextInput.value === ""){
+    tbody.appendChild(newRow)
+    selectNumbersOfRows(select)
   }
-  searchByIndexInput.placeholder = `1 of ${placeholderText}`
-  rows.forEach(row => {
-    const nameOrTitle = row
-      .querySelector('td:nth-child(2)')
-      .textContent.toLowerCase()
-    if (nameOrTitle.includes(searchByTextInput.value.toLowerCase())) {
-      row.style.display = 'table-row'
-    } else {
-      row.style.display = 'none'
-    }
-
-    if (searchByTextInput.value === '') {
-      selectNumbersOfRows(select)
-    }
-  })
-  updatePaginationAfterSearching()
+  const numberOfPage = Math.ceil(document.querySelectorAll(".row").length / parseInt(select.value))
+  updateNumbersOfRowsInSearchingInput()
+  assignNumberOfTablePages(numberOfPage)
+  showEmptyTableInfoAfterSearching()
+  selectNumbersOfRows(select)
+  updatePaginationNextButton()
 }
 
 function searchByIndex(select) {
   const searchByIndexInput = document.getElementById('searchByIndex')
   const rows = Array.from(document.querySelectorAll('.row'))
+  const visibleRows = rows.filter(row => row.style.display === 'table-row')
+  const next = document.querySelector('.arrow-right');
+
+  assignNumberOfTablePages(Math.ceil(visibleRows.length/select.value))
+
   rows.forEach(row => {
     let rowsNumber = Number(row.id) + 1
     if (
@@ -401,10 +381,39 @@ function searchByIndex(select) {
       row.style.display = 'none'
     }
   })
+
   if (searchByIndexInput.value === '') {
     selectNumbersOfRows(select)
+    next.disabled = false
+    select.disabled = false
+  } else {
+    next.disabled = true
+    select.disabled = true
   }
-  updatePaginationAfterSearching()
+
+  showEmptyTableInfoAfterSearching()
+}
+
+function showEmptyTableInfoAfterSearching(){
+  const rows = Array.from(document.querySelectorAll('.row'))
+  const visibleRowsLength = rows.filter(row => row.style.display === 'table-row').length
+  const info = document.createElement('p')
+  if(visibleRowsLength === 0){
+    info.classList.add('empty-table-info')
+    info.textContent = 'Brak elementów do wyświetlenia'
+    paginationContainer.style.display = "none"
+    tableContainer.style.display = "none"
+    inputs.after(info)
+    if (document.querySelectorAll('.empty-table-info').length > 1){
+      document.querySelectorAll('.empty-table-info').forEach((item, index) => {
+        if(index > 0)
+        item.remove()})
+    }
+  } else if(visibleRowsLength !== 0) {
+    document.querySelectorAll('.empty-table-info').forEach(item => item.remove())
+    tableContainer.style.display = "table"
+    paginationContainer.style.display = "flex"
+  }
 }
 
 function createPagination() {
@@ -421,143 +430,166 @@ function createPagination() {
   body.appendChild(paginationContainer)
 }
 
+function assignNumberOfTablePages(numberOfPage){
+  const currentPage = document.querySelector('.current-page');
+  currentPage.textContent = ` of ${numberOfPage}`;
+}
+
+function handlePagination(rows, selectedValue, select) {
+  const prev = document.querySelector('.arrow-left');
+  const next = document.querySelector('.arrow-right');
+  const pagesInput = document.querySelector('#pageInput');
+
+  let numberOfPage = Math.ceil(rows.length / selectedValue);
+  let number = parseInt(pagesInput.value) || 1;
+
+  pagesInput.setAttribute('min', '1');
+  pagesInput.setAttribute('max', numberOfPage);
+
+  assignNumberOfTablePages(numberOfPage)
+  updatePaginationPrevButton(number, numberOfPage, prev);
+  updatePaginationNextButton(number, numberOfPage, next);
+  showCurrentTablePage(number, selectedValue);
+
+  select.addEventListener('change', function () {
+    const selectedVal = document.querySelector("select").value
+    pagesInput.value = 1
+    pagesInput.setAttribute('max', numberOfPage);
+    number = 1;
+    updatePaginationPrevButton(number, numberOfPage, prev);
+    updatePaginationNextButton(number, numberOfPage, next);
+    showCurrentTablePage(number, selectedVal); 
+  });
+
+  pagesInput.addEventListener('input', function () {
+    number = Number(pagesInput.value) || 1;
+    if (number > numberOfPage) number = numberOfPage;
+    if (number < 1) number = 1;
+    updatePaginationPrevButton(number, numberOfPage, prev);
+    updatePaginationNextButton(number, numberOfPage, next);
+    showCurrentTablePage(number, selectedValue);
+  });
+
+  prev.addEventListener('click', function () {
+    number--;
+    updatePaginationPrevButton(number, numberOfPage, prev);
+    updatePaginationNextButton(number, numberOfPage, next);
+    showCurrentTablePage(number, selectedValue);
+    pagesInput.value = number;
+  });
+
+  next.addEventListener('click', function () {
+    number++;
+    updatePaginationPrevButton(number, numberOfPage, prev);
+    updatePaginationNextButton(number, numberOfPage, next);
+    showCurrentTablePage(number, selectedValue);
+    pagesInput.value = number;
+  }); 
+}
+
+function removeCheckedRows() {
+  const checkboxes = document.querySelectorAll('input[type=checkbox]');
+  const rows = Array.from(document.querySelectorAll('.row'));
+
+  checkboxes.forEach((checkbox, index) => {
+    if (checkbox.checked) {
+      rows[index].remove();
+    }
+  });
+  updateNumbersOfRowsInSearchingInput();
+  showEmptyTableInfo();
+  updatePaginationAfterMultipleDeletion();
+}
+
+function handleDeleteSingleRow() {
+  const rows = document.querySelectorAll('.row');
+  const deleteBtns = document.querySelectorAll('#delete');
+  const select = document.querySelector("select")
+  const pagesInput = document.querySelector('#pageInput');
+
+  deleteBtns.forEach((btn, index) => {
+    btn.addEventListener('click', function () {
+      rows.forEach(row => {
+        if (index.toString() === row.id) {
+          row.remove();
+          updateNumbersOfRowsInSearchingInput();
+          updatePaginationInput(pagesInput, select)
+          updatePaginationAfterDeletion();
+          showEmptyTableInfo();
+        }
+      });
+      
+      showCurrentTablePage(pagesInput.value, select.value);
+    });
+  });
+}
+
 function updatePaginationAfterDeletion() {
   const select = document.querySelector('select')
   const rows = Array.from(document.querySelectorAll('.row'))
   handlePagination(rows, select.value, select)
 }
 
-function updatePaginationInputAfterDeletion(pagesInput, numberOfPage) {
-  if (parseInt(pagesInput.value) > numberOfPage) pagesInput.value = numberOfPage
+function updatePaginationAfterMultipleDeletion() {
+  const pagesInput = document.querySelector('#pageInput');
+  const select = document.querySelector('select');
+  updatePaginationInput(pagesInput, select)
+  showCurrentTablePage(parseInt(pagesInput.value), select.value);
+  updatePaginationAfterDeletion();
 }
 
-function updatePaginationAfterSearching() {
-  const pagesInput = document.querySelector('#pageInput')
-  pagesInput.value = 1
-}
-
-function removeCheckedRows() {
-  const checkboxes = document.querySelectorAll('input[type=checkbox]')
-  const rows = document.querySelectorAll('.row')
-  checkboxes.forEach((checkbox, index) => {
-    if (checkbox.checked) {
-      rows[index].remove()
-      updateNumbersOfRows()
-      showEmptyTableInfo()
-    }
-  })
-  updatePaginationAfterDeletion()
-}
-
-function handleDeleteSingleRow() {
-  const rows = document.querySelectorAll('.row')
-  const deleteBtns = document.querySelectorAll('#delete')
-  
-  deleteBtns.forEach((btn, index) => {
-    btn.addEventListener('click', function () {
-      rows.forEach(row => {
-        if (index.toString() === row.id) {
-          row.remove()
-          updateNumbersOfRows()
-          showEmptyTableInfo()
-
-          const totalRows = document.querySelectorAll('.row').length
-          const selectedValue = document.querySelector('select').value
-          let numberOfPage = Math.ceil(totalRows / selectedValue)
-
-          
-          if (parseInt(pagesInput.value) > numberOfPage) {
-            pagesInput.value = numberOfPage
-          }
-
-          updatePaginationAfterDeletion()
-        }
-      })
-    })
-  })
-}
-
-function handlePagination(rows, selectedValue = 10, select) {
-  const prev = document.querySelector('.arrow-left')
-  const next = document.querySelector('.arrow-right')
-  const currentPage = document.querySelector('.current-page')
-  const pagesInput = document.querySelector('#pageInput')
-  let numberOfPage = Math.ceil(rows.length / selectedValue)
-  let number = parseInt(pagesInput.value) ||1
-
-  pagesInput.setAttribute('min', '1')
-  pagesInput.setAttribute('max', numberOfPage)
-  currentPage.textContent = ` of ${numberOfPage}`
-
-  function showCurrentPages(number = 1) {
-    const rowsPerPage = Number(select.value)
-    const startId = (number - 1) * rowsPerPage
-    const endId = number * rowsPerPage
-    rows.forEach(row => {
-      const rowId = Number(row.id)
-      if (rowId >= startId && rowId < endId) {
-        row.style.display = 'table-row'
-      } else {
-        row.style.display = 'none'
-      }
-    })
+function updatePaginationInput(pagesInput, select){
+  const rows = document.querySelectorAll('.row').length;
+  const numberOfPage = Math.ceil(rows / parseInt(select.value));
+  if (parseInt(pagesInput.value) > numberOfPage) {
+    pagesInput.value = numberOfPage;
+  }
   }
 
-  function updatePrevButton() {
-    if (number <= 1 || numberOfPage === 1) {
-      prev.disabled = true
+function showCurrentTablePage(number = 1, rowsPerPage) {
+  const rows = Array.from(document.querySelectorAll('.row'));
+  const startId = (number - 1) * parseInt(rowsPerPage)
+  const endId = number * parseInt(rowsPerPage)
+  rows.forEach((row, index )=> {
+    const rowId = Number(index);
+    if (rowId >= startId && rowId < endId) {
+      row.style.display = 'table-row';
     } else {
-      prev.disabled = false
+      row.style.display = 'none';
     }
-  }
-
-  function updateNextButton() {
-    if (number >= numberOfPage || numberOfPage === 1) {
-      next.disabled = true
-    } else {
-      next.disabled = false
-    }
-  }
-
-  prev.addEventListener('click', function () {
-    number--
-    updatePrevButton()
-    updateNextButton()
-    showCurrentPages(number)
-    pagesInput.value = number
-  })
-  next.addEventListener('click', function () {
-    number++
-    updatePrevButton()
-    updateNextButton()
-    showCurrentPages(number)
-    pagesInput.value = number
-  })
-
-  select.addEventListener('change', function () {
-    pagesInput.value = 1
-    pagesInput.value = 1
-    number = 1
-    updatePrevButton()
-    updateNextButton()
-    showCurrentPages(number)
-  })
-
-  pagesInput.addEventListener('input', function () {
-    number = Number(pagesInput.value) || 1
-    if (number > numberOfPage) number = numberOfPage
-    if (number < 1) number = 1
-    updatePrevButton()
-    updateNextButton()
-    showCurrentPages(number)
-  })
-  updatePrevButton()
-  updateNextButton()
-  showCurrentPages()
-  updatePaginationInputAfterDeletion(pagesInput, numberOfPage)
+  });
 }
 
-function showActiveButton() {
+function updatePaginationPrevButton(number, numberOfPage, button) {
+  if (number <= 1 || numberOfPage === 1) {
+    button.disabled = true
+  } else {
+    button.disabled = false
+  }
+}
+
+function updatePaginationNextButton(number, numberOfPage, button) {
+  if (number >= numberOfPage || numberOfPage === 1 ) {
+    button.disabled = true
+  } else {
+    button.disabled = false
+  }
+}
+
+function showEmptyTableInfo() {
+  const tbody = document.querySelector('tbody')
+  const info = document.createElement('p')
+  info.classList.add('empty-table-info')
+  info.textContent = 'Brak elementów do wyświetlenia'
+  if (tbody.children.length === 0 ) {
+    inputs.remove()
+    paginationContainer.remove()
+    document.querySelector('thead').remove()
+    tableContainer.appendChild(info)
+  } 
+}
+
+function showActiveMainButton() {
   const mainButtons = document.querySelectorAll('.main-button')
   mainButtons.forEach(button => {
     button.addEventListener('click', function () {
@@ -570,13 +602,15 @@ function showActiveButton() {
 function setColorTheme() {
   const darkModeBtn = document.querySelector('.dark-mode')
   const colorfullModeBtn = document.querySelector('.colorfull-mode')
-  darkModeBtn.addEventListener('click', setDarkTheme)
-  colorfullModeBtn.addEventListener('click', setColorfullTheme)
+  darkModeBtn.addEventListener('click', setDarkMode)
+  colorfullModeBtn.addEventListener('click', setColorfullMode)
 }
-function setDarkTheme() {
+
+function setDarkMode() {
   body.classList.add('dark-theme')
 }
-function setColorfullTheme() {
+
+function setColorfullMode() {
   body.classList.remove('dark-theme')
 }
 
