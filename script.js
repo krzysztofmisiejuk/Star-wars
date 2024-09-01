@@ -201,7 +201,6 @@ function selectNumbersOfRows(select) {
   handlePagination(rows, select.value, select)
 }
 
-
 function showModal(event) {
   const modal = document.createElement('div')
   modal.innerHTML = `<button class="close-modal-btn">&times;</button>
@@ -459,12 +458,15 @@ function handlePagination(rows, selectedValue, select) {
   updatePaginationPrevButton(number, numberOfPage, prev);
   updatePaginationNextButton(number, numberOfPage, next);
   showCurrentTablePage(number, selectedValue);
-
+ 
   select.addEventListener('change', function () {
     const selectedVal = document.querySelector("select").value
-    pagesInput.value = 1
+    numberOfPage = Math.ceil(rows.length / selectedVal);
     pagesInput.setAttribute('max', numberOfPage);
-    number = 1;
+        if (number > numberOfPage) {
+         number = numberOfPage;
+         pagesInput.value = number; 
+        }
     updatePaginationPrevButton(number, numberOfPage, prev);
     updatePaginationNextButton(number, numberOfPage, next);
     showCurrentTablePage(number, selectedVal); 
@@ -472,8 +474,11 @@ function handlePagination(rows, selectedValue, select) {
 
   pagesInput.addEventListener('input', function () {
     number = Number(pagesInput.value) || 1;
-    if (number > numberOfPage) number = numberOfPage;
-    if (number < 1) number = 1;
+    if (number > numberOfPage) {
+      number = numberOfPage;
+      pagesInput.value = number; 
+     }
+     if (number < 1) number = 1;
     updatePaginationPrevButton(number, numberOfPage, prev);
     updatePaginationNextButton(number, numberOfPage, next);
     showCurrentTablePage(number, selectedValue);
@@ -494,6 +499,7 @@ function handlePagination(rows, selectedValue, select) {
     showCurrentTablePage(number, selectedValue);
     pagesInput.value = number;
   }); 
+
 }
 
 function removeCheckedRows() {
@@ -559,14 +565,14 @@ function showCurrentTablePage(number = 1, rowsPerPage) {
   const rows = Array.from(document.querySelectorAll('.row'));
   const startId = (number - 1) * parseInt(rowsPerPage)
   const endId = number * parseInt(rowsPerPage)
-  rows.forEach((row, index )=> {
-    const rowId = Number(index);
+  rows.forEach((row, index)=> {
+    const rowId = Number(index)
     if (rowId >= startId && rowId < endId) {
-      row.style.display = 'table-row';
+      row.style.display = 'table-row'
     } else {
-      row.style.display = 'none';
+      row.style.display = 'none'
     }
-  });
+  })
 }
 
 function updatePaginationPrevButton(number, numberOfPage, button) {
