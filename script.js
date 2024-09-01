@@ -29,8 +29,7 @@ function createNavbar() {
             <button class="colorfull-mode">color fulltheme</button>
             <button class="dark-mode">dark theme</button>
         </div>
-    </div>
-`
+    </div>`
   body.appendChild(navbar)
   return navbar
 }
@@ -168,9 +167,9 @@ function updateTableFields(event) {
     searchByIndexInput.addEventListener('keyup', function () {
       searchByIndex(select)
     })
-    select.addEventListener('change', function () {
-      selectNumbersOfRows(select)
-    })
+    // select.addEventListener('change', function () {
+    //   selectNumbersOfRows(select)
+    // })
   })
   const addBtns = document.querySelectorAll('#add')
   addBtns.forEach(btn =>
@@ -353,21 +352,17 @@ function searchByText(newRow, tbody,  name, searchByTextInput, select){
   if(name.toLowerCase().includes(textInputValue)){
     tbody.appendChild(newRow)
     selectNumbersOfRows(select) 
-    
-  parseInt(pagesInput.value)> numberOfPage ? pagesInput.value = 1 :  updateNumbersOfRowsInSearchingInput()
-
+    parseInt(pagesInput.value)> numberOfPage ? pagesInput.value = 1 :  updateNumbersOfRowsInSearchingInput()
   } else if(searchByTextInput.value === ""){
     tbody.appendChild(newRow)
     selectNumbersOfRows(select)
     updateNumbersOfRowsInSearchingInput()
   }  
   
-
   selectNumbersOfRows(select)
   updateNumbersOfRowsInSearchingInput()
   assignNumberOfTablePages(numberOfPage)
   showEmptyTableInfoAfterSearching()
-  
 }
 
 function searchByIndex(select) {
@@ -463,13 +458,15 @@ function handlePagination(rows, selectedValue, select) {
     const selectedVal = document.querySelector("select").value
     numberOfPage = Math.ceil(rows.length / selectedVal);
     pagesInput.setAttribute('max', numberOfPage);
-        if (number > numberOfPage) {
-         number = numberOfPage;
-         pagesInput.value = number; 
-        }
+    if (number > numberOfPage) {
+      number = numberOfPage;
+      pagesInput.value = number; 
+    }
+    assignNumberOfTablePages(numberOfPage)
     updatePaginationPrevButton(number, numberOfPage, prev);
     updatePaginationNextButton(number, numberOfPage, next);
     showCurrentTablePage(number, selectedVal); 
+   
   });
 
   pagesInput.addEventListener('input', function () {
