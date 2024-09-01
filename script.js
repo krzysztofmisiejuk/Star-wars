@@ -174,8 +174,8 @@ function updateTableFields(event) {
   })
   const addBtns = document.querySelectorAll('#add')
   addBtns.forEach(btn =>
-    btn.addEventListener('click', function () {
-      showModal()
+    btn.addEventListener('click', function (event) {
+      showModal(event)
     })
   )
 }
@@ -201,7 +201,8 @@ function selectNumbersOfRows(select) {
   handlePagination(rows, select.value, select)
 }
 
-function showModal() {
+
+function showModal(event) {
   const modal = document.createElement('div')
   modal.innerHTML = `<button class="close-modal-btn">&times;</button>
   <table class="modal-table">
@@ -216,11 +217,11 @@ function showModal() {
   const modalTable = modal.querySelector('table')
   const tbody = document.createElement('tbody')
   modalTable.appendChild(tbody)
-  updateModalContent(tbody)
+  updateModalContent(tbody, event)
   closeModal()
 }
 
-function updateModalContent(tbody) {
+function updateModalContent(tbody, event) {
   const mainTableName = tableContainer.querySelector('tbody')
   const addBtns = document.querySelectorAll('#add')
   let valuesFromRow = Object.values(values[mainTableName.id])
@@ -347,19 +348,27 @@ function generateInputsForSearching(event, amountOfRows) {
 function searchByText(newRow, tbody,  name, searchByTextInput, select){
   newRow.remove()
   const textInputValue = searchByTextInput.value.toLowerCase()
+   const numberOfPage = Math.ceil(document.querySelectorAll(".row").length / parseInt(select.value))
+   const pagesInput = document.querySelector('#pageInput');
+   
   if(name.toLowerCase().includes(textInputValue)){
     tbody.appendChild(newRow)
-    selectNumbersOfRows(select)
+    selectNumbersOfRows(select) 
+    
+  parseInt(pagesInput.value)> numberOfPage ? pagesInput.value = 1 :  updateNumbersOfRowsInSearchingInput()
+
   } else if(searchByTextInput.value === ""){
     tbody.appendChild(newRow)
     selectNumbersOfRows(select)
-  }
-  const numberOfPage = Math.ceil(document.querySelectorAll(".row").length / parseInt(select.value))
+    updateNumbersOfRowsInSearchingInput()
+  }  
+  
+
+  selectNumbersOfRows(select)
   updateNumbersOfRowsInSearchingInput()
   assignNumberOfTablePages(numberOfPage)
   showEmptyTableInfoAfterSearching()
-  selectNumbersOfRows(select)
-  updatePaginationNextButton()
+  
 }
 
 function searchByIndex(select) {
@@ -431,8 +440,8 @@ function createPagination() {
 }
 
 function assignNumberOfTablePages(numberOfPage){
-  const currentPage = document.querySelector('.current-page');
-  currentPage.textContent = ` of ${numberOfPage}`;
+  const amountOfPages = document.querySelector('.current-page');
+  amountOfPages.textContent = ` of ${numberOfPage}`;
 }
 
 function handlePagination(rows, selectedValue, select) {
