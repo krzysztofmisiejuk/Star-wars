@@ -167,9 +167,9 @@ function updateTableFields(event) {
     searchByIndexInput.addEventListener('keyup', function () {
       searchByIndex(select)
     })
-    // select.addEventListener('change', function () {
-    //   selectNumbersOfRows(select)
-    // })
+    select.addEventListener('change', function () {
+      selectNumbersOfRows(select)
+    })
   })
   const addBtns = document.querySelectorAll('#add')
   addBtns.forEach(btn =>
@@ -346,17 +346,17 @@ function generateInputsForSearching(event, amountOfRows) {
 function searchByText(newRow, tbody,  name, searchByTextInput, select){
   newRow.remove()
   const textInputValue = searchByTextInput.value.toLowerCase()
-   const numberOfPage = Math.ceil(document.querySelectorAll(".row").length / parseInt(select.value))
-   const pagesInput = document.querySelector('#pageInput');
+  const numberOfPage = Math.ceil(document.querySelectorAll(".row").length / parseInt(select.value))
+  const pagesInput = document.querySelector('#pageInput');
    
   if(name.toLowerCase().includes(textInputValue)){
     tbody.appendChild(newRow)
-    selectNumbersOfRows(select) 
     parseInt(pagesInput.value)> numberOfPage ? pagesInput.value = 1 :  updateNumbersOfRowsInSearchingInput()
+    selectNumbersOfRows(select) 
   } else if(searchByTextInput.value === ""){
     tbody.appendChild(newRow)
-    selectNumbersOfRows(select)
     updateNumbersOfRowsInSearchingInput()
+    selectNumbersOfRows(select)
   }  
   
   selectNumbersOfRows(select)
@@ -442,7 +442,6 @@ function handlePagination(rows, selectedValue, select) {
   const prev = document.querySelector('.arrow-left');
   const next = document.querySelector('.arrow-right');
   const pagesInput = document.querySelector('#pageInput');
-
   let numberOfPage = Math.ceil(rows.length / selectedValue);
   let number = parseInt(pagesInput.value) || 1;
 
@@ -454,9 +453,8 @@ function handlePagination(rows, selectedValue, select) {
   updatePaginationNextButton(number, numberOfPage, next);
   showCurrentTablePage(number, selectedValue);
  
-  select.addEventListener('change', function () {
-    const selectedVal = document.querySelector("select").value
-    numberOfPage = Math.ceil(rows.length / selectedVal);
+  select.addEventListener('change', function (event) {
+    numberOfPage = Math.ceil(rows.length / event.target.value);
     pagesInput.setAttribute('max', numberOfPage);
     if (number > numberOfPage) {
       number = numberOfPage;
@@ -465,17 +463,13 @@ function handlePagination(rows, selectedValue, select) {
     assignNumberOfTablePages(numberOfPage)
     updatePaginationPrevButton(number, numberOfPage, prev);
     updatePaginationNextButton(number, numberOfPage, next);
-    showCurrentTablePage(number, selectedVal); 
-   
+    showCurrentTablePage(number, event.target.value); 
   });
 
   pagesInput.addEventListener('input', function () {
     number = Number(pagesInput.value) || 1;
-    if (number > numberOfPage) {
-      number = numberOfPage;
-      pagesInput.value = number; 
-     }
-     if (number < 1) number = 1;
+    if (number < 1) number = 1;
+    updatePaginationInput(pagesInput, select)
     updatePaginationPrevButton(number, numberOfPage, prev);
     updatePaginationNextButton(number, numberOfPage, next);
     showCurrentTablePage(number, selectedValue);
@@ -496,7 +490,6 @@ function handlePagination(rows, selectedValue, select) {
     showCurrentTablePage(number, selectedValue);
     pagesInput.value = number;
   }); 
-
 }
 
 function removeCheckedRows() {
@@ -530,7 +523,6 @@ function handleDeleteSingleRow() {
           showEmptyTableInfo();
         }
       });
-      
       showCurrentTablePage(pagesInput.value, select.value);
     });
   });
@@ -556,7 +548,7 @@ function updatePaginationInput(pagesInput, select){
   if (parseInt(pagesInput.value) > numberOfPage) {
     pagesInput.value = numberOfPage;
   }
-  }
+}
 
 function showCurrentTablePage(number = 1, rowsPerPage) {
   const rows = Array.from(document.querySelectorAll('.row'));
